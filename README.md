@@ -1,6 +1,18 @@
 # Claude Code Skills - Codebase Topology and Recon
 
+**Original Author:** Kishor Gartaula ([@thisiskishor](https://github.com/thisiskishor))  
+**License:** MIT — Use freely, modify, and share with attribution (see [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) for details)
+
+---
+
 Two tools for Claude Code that make it a careful engineering partner - one that maps the territory before touching anything, instead of diving straight into writing code.
+
+---
+
+## Inspiration
+
+This skill was inspired by architectural thinking from [acidgreenservers](https://github.com/acidgreenservers).  
+See [ATTRIBUTIONS.md](ATTRIBUTIONS.md) for details on inspiration sources and the attribution chain.
 
 ---
 
@@ -162,12 +174,15 @@ If any are unclear, Claude stops and asks instead of guessing.
 
 ---
 
-## License
+## License & Attribution
 
-MIT - use freely, modify, share.
+This work is licensed under the MIT License with an **attribution requirement**.
 
----
+If you modify and republish this skill, you must:
+- Retain the copyright notice (Kishor Gartaula)
+- Include attribution to the original author
+- Include the full LICENSE file
 
-## Author
+See [NOTICE.md](NOTICE.md) for details.
 
-[thisiskishor](https://github.com/thisiskishor)
+**Original author:** [Kishor Gartaula](https://github.com/thisiskishor) — [kishorgartaula.com.np](https://www.kishorgartaula.com.np)

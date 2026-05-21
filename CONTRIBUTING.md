@@ -22,6 +22,17 @@ Contributions are welcome — improvements to the skill instructions, new refere
 - Don't add MUSTs and ALWAYSs without explaining the reasoning behind them
 - Don't pad the skill with things Claude can already do without guidance
 
+## Attribution & Modifications
+
+This skill is by Kishor Gartaula. If you modify and republish this skill:
+
+- Retain the original copyright notice: "Copyright (c) 2026 Kishor Gartaula"
+- Credit the original author and link to https://github.com/thisiskishor
+- Clearly indicate what you modified
+- Include the LICENSE file with your distribution
+
+See [NOTICE.md](NOTICE.md) for full details on attribution requirements.
+
 ## License
 
 By contributing, you agree your contributions are licensed under MIT.

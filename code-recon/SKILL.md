@@ -3,8 +3,8 @@ name: code-recon
 description: "Maps any codebase before you touch it. Use when starting on unfamiliar code, before a risky change, or when you need to understand what's connected to what. Triggers on: 'map this repo', 'code audit', 'quick scan', 'deep scan', 'what breaks if I change X', 'blast radius of this change', 'what depends on this file', 'recon diff', 'what changed since last scan', 'analyze this project', 'give me a topology report'. Also triggers automatically before modifying an unfamiliar file mid-session."
 license: MIT
 metadata:
-  author: thisiskishor
-  version: 2.0.0
+  author: Kishor Gartaula (@thisiskishor)
+  version: 2.1.0
 ---
 
 # Code-Base Reconnaissance Analyst
@@ -28,6 +28,89 @@ Choose the mode that fits the situation. If the user does not specify, default t
 | [Deep](#deep-scan) | Pre-refactor, security review, onboarding to a large codebase | ~20 min |
 | [Change-Impact](#change-impact-mode) | About to modify a specific file or function | ~5 min |
 | [Recon Diff](#recon-diff-mode) | Second scan on a repo you have scanned before | ~5 min |
+
+---
+
+## When to Use This Skill
+
+Use Code-Recon when you need to:
+
+- **Start on unfamiliar code** — Before touching anything, map the territory first
+- **Make a risky change** — Understand blast radius before modifying a high-centrality file
+- **Review security** — Pre-launch audit to find input validation gaps, auth issues, secrets in code
+- **Onboard to a large codebase** — Fast topology report beats hours of reading
+- **Refactor safely** — Know what depends on the code you're about to change
+- **Debug emergency issues** — Understand the system before making changes
+- **Track architectural drift** — Compare scans over time to see what changed
+
+**Who benefits most:**
+- Solo developers joining new projects
+- Team leads onboarding engineers
+- Security reviewers doing audits
+- Refactoring specialists planning large changes
+- On-call engineers fixing production bugs
+
+---
+
+## How to Use (Invocation Examples)
+
+### Quick Scan (fast orientation)
+
+Trigger with any of these:
+```
+Quick scan
+Fast orientation of this project
+Quick analysis
+```
+
+Claude returns stack, entry points, high-centrality files, immediate red flags in ~2 minutes.
+
+### Standard Scan (full topology)
+
+```
+Code audit
+Map this repo
+Analyze this project
+Give me a topology report
+```
+
+Full report: stack, endpoints, data flow, security boundaries, test coverage, dead code, risk table, fixes ordered by impact.
+
+### Deep Scan (security + architecture)
+
+```
+Deep scan
+Full security review
+Comprehensive analysis
+```
+
+Everything in Standard, plus:
+- Input-to-database path tracing (where does user input go?)
+- Coverage cross-reference (which endpoints are untested?)
+- Dependency depth analysis (what breaks if I change X?)
+- Async hazard detection (race conditions, missing awaits)
+- Architecture assessment against 20 domain wisdom seeds
+
+### Change-Impact Mode (blast radius)
+
+```
+What breaks if I change this file?
+Blast radius of modifying X
+What depends on this function?
+Is it safe to delete this?
+```
+
+Maps direct dependents, transitive dependents, side effects, test coverage, and rates the blast radius (Contained / Moderate / Wide / Unknown).
+
+### Recon Diff (compare scans)
+
+```
+What changed since the last scan?
+Compare to previous report
+Recon diff
+```
+
+Diffs two scans, shows what's new, what's removed, regressions, improvements, and architectural drift.
 
 ---
 
@@ -216,6 +299,37 @@ All Standard sections, plus:
 
 ---
 
+## Domain Wisdom Seeds (Production System Principles)
+
+When analyzing architecture in Standard, Deep, or Change-Impact mode, reports reference these 20 seeds from `references/domain-wisdom.md`. These are principles for identifying structural problems like lock contention, wrong-tool usage, and scalability ceilings.
+
+**Sample seeds (see `references/domain-wisdom.md` for all 20):**
+
+- **Seed 1: "State is the bottleneck"** — Shared state causes lock contention. Design for isolation.
+- **Seed 2: "Visibility is survival"** — Logs, metrics, and traces prevent silent failures. Instrument everything.
+- **Seed 3: "Cascading failures kill systems"** — If A fails, does B fail? Does B's failure propagate to C? Design for isolation.
+- **Seed 4: "Retry storms drown the system"** — Exponential backoff + jitter, not naive retries.
+- **Seed 5: "Cache coherence is hard"** — Caches are a source of truth bugs. Know your invalidation strategy.
+- **Seed 6: "Database is the throughput ceiling"** — Most systems are DB-limited. Understand your bottleneck.
+- **Seed 7: "Input is the enemy"** — Every external input is a potential attack vector. Validate always.
+- **Seed 8: "Authorization is not authentication"** — Auth checks who you are. Authorization checks what you can do. Easy to confuse.
+- **Seed 9: "Secrets at rest"** — Never log, store, or transmit unencrypted secrets. Ever.
+- **Seed 10: "Synchronous calls are slow calls"** — Network calls block. Design async when latency matters.
+- **Seed 11: "Distributed consensus is expensive"** — If you need all nodes to agree, your design has a bottleneck.
+- **Seed 12: "Minimalism"** — Fewer dependencies = smaller attack surface = easier to understand.
+- **Seed 13: "Time is fake"** — Clocks drift. Rely on logical ordering, not wall-clock time.
+- **Seed 14: "Partial failures exist"** — Systems don't fail cleanly. Some requests succeed, some fail. Design for that.
+- **Seed 15: "Observability scales inversely with complexity"** — Complex systems need better metrics or they become opaque.
+- **Seed 16: "Backpressure prevents drowning"** — If consumers can't keep up, slow down producers.
+- **Seed 17: "Idempotency is your friend"** — Safe retries require operations that can run twice without side effects.
+- **Seed 18: "Coupling spreads pain"** — Tight coupling between modules = changes cascade everywhere.
+- **Seed 19: "Synchronized burst kills systems"** — When all background jobs fire at the same time, the system shrieks.
+- **Seed 20: "Graceful degradation > clean failure"** — Better to serve most users slowly than fail everyone.
+
+Each risk in the report links to the relevant seed so you understand not just what the problem is, but why it matters architecturally.
+
+---
+
 ## Change-Impact Mode
 
 **Goal:** Given a specific file or function, map everything that would be affected by changing it. Focused blast-radius analysis before making a move.
@@ -317,12 +431,97 @@ All Standard sections, plus:
 
 ---
 
+## Worked Examples
+
+### Example 1: Quick Scan Output
+
+**Input:** "quick scan" on an unfamiliar Node.js project mid-task
+
+**Output:**
+
+```
+## Quick Scan: checkout-service
+
+**Stack:** Node.js 18 + Express 4 + PostgreSQL (Knex ORM)
+**Entry points:** 
+  - src/server.ts (REST API, port 8080)
+  - src/worker.ts (background job processor)
+
+**High-centrality files:**
+  - src/db/client.ts — Database connection pool; 18 files import this
+  - src/middleware/auth.ts — JWT validation on all protected routes
+  - src/types/index.ts — Core TypeScript types; 22 files depend on this
+
+**Immediate flags:**
+  - DATABASE_URL hardcoded in src/config.ts (should be .env)
+  - No input validation on /api/checkout POST (accepts raw amount)
+  - Missing CORS configuration (open to all origins)
+
+**Recommended next step:** Run Standard for full security analysis
+```
+
+---
+
+### Example 2: Standard Scan Output (Excerpt)
+
+**Input:** "code audit" on a mature Next.js e-commerce platform
+
+**Output (sections shown):**
+
+```
+# Topology Report: ecommerce-platform
+
+## Executive Summary
+- 52 API routes, 12 database tables, 4 external integrations (Stripe, SendGrid, Supabase Auth, S3)
+- 19 high-risk findings; 5 are critical (input validation, auth gaps, secrets in logs)
+- Test coverage: 38% overall (low); checkout flow untested (critical)
+- Build status: ✅ passing, 0 TypeScript errors
+
+## Risk Summary
+
+| Area | Rating | Justification | Seed |
+|---|---|---|---|
+| Missing input validation on `/api/checkout` | **Critical** | POST accepts raw amount, no bounds | Seed 7: "Input is the enemy" |
+| Payment tokens logged in debug logs | **Critical** | Stripe tokens exposed in bunyan logs | Seed 9: "Secrets at rest" |
+| Cart updates race condition | **High** | Concurrent PATCH requests can corrupt state | Seed 14: "Partial failures exist" |
+| No test coverage on billing endpoints | **High** | 0% coverage on 12 critical routes | Seed 15: "Observability" |
+| 14 unused npm dependencies | **Medium** | Bloat; increases attack surface | Seed 12: "Minimalism" |
+| Database connection pool not configured | **Medium** | Using defaults; no connection limit | Seed 6: "DB is throughput ceiling" |
+
+## Fix This First (ordered by impact + ease)
+
+1. **10 min** — Add input validation to `/api/checkout` (Zod schema exists in `lib/schemas.ts`, just needs wiring)
+2. **5 min** — Disable debug logging in production (ENV check exists, just needs activation)
+3. **30 min** — Make cart updates atomic using Prisma `$transaction` (pattern already in `/api/orders`)
+4. **20 min** — Configure database pool limits in `src/db/client.ts`
+5. **45 min** — Remove 14 unused packages (run `npm audit` then remove each)
+
+## Recommended Next Steps
+
+1. Add `validateCheckout()` to line 42 of `app/api/checkout/route.ts` — pattern matches `app/api/users/route.ts`
+2. Wrap cart mutations in `$transaction()` — see example in `app/api/orders/[id]/route.ts`
+3. Enable Stripe webhook signature verification (code exists in `lib/stripe.ts` line 67, just commented out)
+4. Add test file for checkout flow at `tests/checkout.test.ts` (template exists at `tests/users.test.ts`)
+```
+
+This shows users exactly what output to expect and how risks are prioritized.
+
+---
+
 ## Constraints (All Modes)
 
 - No modifications to any source file, configuration, or repository metadata
 - Do not execute build, test, or deployment commands
 - Do not expose secrets, keys, or credentials found in the codebase
 - If the repo exceeds ~10,000 files, note the limitation and ask the user whether to scan a specific subdirectory instead
+
+---
+
+## Related Skills
+
+- **code-brain** — Persistent session memory for multi-session projects
+  - Pair with: Use code-recon first to understand codebase, then `/code-brain init` to set up session memory
+  - Why together: Topology knowledge + session memory = context survival across sessions
 
 ---
 
