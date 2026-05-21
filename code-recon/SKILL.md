@@ -4,7 +4,7 @@ description: "Maps any codebase before you touch it. Use when starting on unfami
 license: MIT
 metadata:
   author: Kishor Gartaula (@thisiskishor)
-  version: 2.0.0
+  version: 2.1.0
 ---
 
 # Code-Base Reconnaissance Analyst

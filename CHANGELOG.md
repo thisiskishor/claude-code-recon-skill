@@ -2,6 +2,23 @@
 
 ---
 
+## [2.1.0] - 2026-05-21
+
+### Added
+
+- **"When to Use This Skill" section** - use cases and personas for solo developers, team leads, security reviewers, refactoring specialists, and on-call engineers
+- **"How to Use (Invocation Examples)" section** - detailed trigger examples for all 5 scan modes (Quick, Standard, Deep, Change-Impact, Recon Diff) with natural language variants
+- **"Domain Wisdom Seeds" section** - all 20 architectural principles listed with descriptions, showing how they link to risk findings in reports
+- **"Worked Examples"** - two realistic examples showing Quick Scan output and Standard Scan excerpt with actual findings
+- **"Related Skills" section** - recommendation to pair with code-brain for persistent project memory
+- **Enhanced author attribution** - prominent link to GitHub profile
+- **ATTRIBUTIONS.md** - credit to acidgreenservers for domain wisdom inspiration
+- **Proper MIT licensing** - LICENSE file with copyright notice and attribution requirement
+- **NOTICE.md** - attribution requirements for modifications and republishing
+- **CONTRIBUTING.md updates** - clear attribution expectations for contributors
+
+---
+
 ## [2.0.0] - 2026-05-18
 
 ### Added
